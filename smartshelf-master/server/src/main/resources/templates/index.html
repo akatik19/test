@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en"
+	xmlns:th="http://www.thymeleaf.org"
+  	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+	<title>SmartShelf</title>
+    <meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link href="../static/css/index.css" th:href="@{/css/index.css}" rel="stylesheet" />
+    
+	<!-- Bootstrap -->
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+          crossorigin="anonymous"></link>
+	
+	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <!-- Bootstrap core JavaScript
+	================================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	
+	<script src="https://npmcdn.com/tether@1.2.4/dist/js/tether.min.js"></script>
+	<script src="../static/js/bootstrap.min.js" th:src="@{/js/bootstrap.min.js}" type="text/javascript"></script>
+	<script src="../static/js/qrscanning/jsqrscanner.nocache.js" th:src="@{/js/qrscanning/jsqrscanner.nocache.js}" type="text/javascript"></script>
+	    
+	<script type="text/javascript" th:inline="javascript">
+
+		$(document).ready(function() {
+	
+			// initialization
+			$('#current-search-info-modal').on('shown.bs.modal', function (e) {
+			  
+				loadSearchInfoModal();
+			})
+			
+			
+			// focus always of main search field
+			$('#main-search-field').focus().select();
+			
+			$('#navbar-search-field').keydown( function(e) {
+		        var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
+		        if(key == 13) {
+		            e.preventDefault();
+	
+		            $("#navbar-search-button").click();
+		        }
+		    });
+			
+			$('#main-search-field').keydown( function(e) {
+		        var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
+		        if(key == 13) {
+		            e.preventDefault();
+	
+		            $("#main-search-submit").click();
+		        }
+		    });
+			
+	 		$("#main-search-submit").click(function() {
+	 			
+	 			var searchparam = $("#main-search-field").val(); 
+	 			itemSearch(searchparam);
+	 		});
+	 		
+	 		$("#navbar-search-button").click(function() {
+	 			
+	 			var searchparam = $("#navbar-search-field").val(); 
+	 			itemSearch(searchparam);
+	 		});
+	 		
+	 		
+	 		function itemSearch( keyword ) {
+	 			
+	 			var sp_uriencoded = encodeURI( keyword );
+	 			console.log("Search parameter: " + sp_uriencoded); 
+	 			console.log([[${serverurl}]]);
+	 			window.location.href='http://' + [[${serverurl}]] + ':' + [[${@environment.getProperty('server.port')}]] + '/?searchParam=' + sp_uriencoded;
+	 		}
+	 		
+			function refreshPage() {
+				console.log("refresh page");
+				window.location.reload(true);
+			}
+			
+			function sendBlinkSignal(boxid, color) {
+				
+				var _url = "http://" + [[${serverurl}]] + ':' + [[${@environment.getProperty('server.port')}]] + "/box/signal/start/" + boxid + "/" + color; 
+				
+				 $.ajax({
+				        type: "POST",
+				        url: _url,
+				        cache: false,
+				        timeout: 600000,
+				        success: function (data) {
+		
+				            console.log("Successfully send request.", data);
+				            
+				            if( !data ) { 
+				            	
+				            	$('#NAModal').modal('show');
+				            	
+				            } else { 
+				            	
+				            	refreshPage();
+				            	
+				            }
+		
+				        },
+				        error: function (e) {
+		
+				            console.log("ERROR : ", e);
+				        }
+				    });
+			}
+	 		
+			/*
+			setInterval( function() {
+	 			
+				var server = [[${serverurl}]];
+				var port = [[${serverport}]];
+	 			var url = "http://" + server + ":" + port + "/info/search/amount";
+	 			
+	 			$.get( url, function( data ) {
+	 				if( data !== undefined || data !== null ) {
+						$( "#current-searches-badge" ).html( data );
+						console.log("updated ", data);
+	 				} 
+				}).fail(function(e) {    
+				    console.error(e);
+				});
+	 			
+	 		}, 5000);*/
+		});
+		
+		function sendStopBlinkSignal(boxid, color) {
+			
+			var _url = "http://" + [[${serverurl}]] + ':' + [[${@environment.getProperty('server.port')}]] + "/box/signal/stop/" + boxid + "/" + color; 
+			
+			 $.ajax({
+			        type: "POST",
+			        url: _url,
+			        cache: false,
+			        timeout: 600000,
+			        success: function (data) {
+
+			            console.log("Successfully send request.", data);
+			            loadSearchInfoModal();
+
+			        },
+			        error: function (e) {
+
+			            console.log("ERROR : ", e);
+			        }
+			    });
+		}
+		
+ 		function loadSearchInfoModal() {
+ 			$("#search-modal-loader-gif").show();
+ 			  
+ 			  var server = [[${serverurl}]];
+ 			  var port = [[${serverport}]];
+ 			  var url = "http://" + server + ":" + port + "/info/search/detailspage";
+ 			  var imgurl = 
+ 			  $.get( url, function( data ) {
+ 					if( data !== undefined || data !== null ) {
+ 						console.log("Modal updated");
+ 						
+ 						$('#current-search-info-modal-body').html(data);
+ 						
+ 					} 
+ 				}).fail(function(e) {    
+ 				    console.error(e);
+ 				}).always(function() {
+ 					$("#search-modal-loader-gif").hide();
+ 				});
+ 		}
+ 		
+ 		function selectBox( boxid, tdid ) {
+ 			
+ 			var server = [[${serverurl}]];
+			var port = [[${serverport}]];
+			var url = "http://" + server + ":" + port + "/box/select/" + boxid;
+			  
+ 			$.post( url, function( data ) {
+ 				  console.log("Box selected");
+ 				  $('#' + tdid).parent().addClass('success');
+ 				});
+ 		}
+ 		
+ 		function showItemInfoPage( boxid ) {
+ 			
+			var url = /*[[@{http://{_serverurl}:{_port}/qrscanner/info/box/(_serverurl=${serverurl},_port=${serverport})}]]*/ "";
+			var param = /*[[@{?searchParam=}]]*/ "";
+			param += /*[[${searchParam}]]*/ "";
+ 			window.location.href = url + "/" + boxid + param;
+ 		}
+ 		
+ 		function orderSupplies( _boxid ) {
+ 			
+ 			var _url = "http://" + [[${serverurl}]] + ':' + [[${@environment.getProperty('server.port')}]] + "/order/box/empty";
+			
+			 $.ajax({
+			        type: "POST",
+			        url: _url,
+			        cache: false,
+			        data: { 'boxid': _boxid },
+			        timeout: 600000,
+			        success: function (data) {
+
+			        	if( data.success ) {
+			        		// order will be processed
+			        		console.log("'mark as empty' received. Will be processed.");
+			        		alert("Ordered supplies.");
+			        	} else {
+			        		alert("Error occured: " + data.message);
+			        		console.error(data.message);
+			        	}
+
+			        },
+			        error: function (e) {
+
+			            console.log("ERROR : ", e);
+			            alert("Request failed. See console...\n");
+			        }
+			    });
+ 		}
+ 		
+ 		function startServiceMode() {
+ 			var url='http://' + [[${serverurl}]] + ':' + [[${@environment.getProperty('server.port')}]] + '/servicemode/start';
+ 			
+ 			$.post(url)
+				.done(function( data ) {
+				  console.log("post request done"); 
+				  window.location.reload(true);
+				})
+				.fail(function( error ) {
+					alert(error);
+				});
+ 		}
+ 		
+ 		function stopServiceMode() {
+ 			var url='http://' + [[${serverurl}]] + ':' + [[${@environment.getProperty('server.port')}]] + '/servicemode/stop';
+ 			
+ 			$.post(url)
+			.done(function( data ) {
+			  console.log("post request done"); 
+			  window.location.reload(true);
+			})
+			.fail(function( error ) {
+				alert(error);
+			});
+ 		}
+	
+	 </script>
+</head>
+<body>
+
+<div th:replace="navbar :: navbar">
+</div>
+
+<noscript>
+    <div style="width: 22em; position: absolute; left: 50%; margin-left: -11em; color: red; background-color: white; border: 1px solid red; padding: 4px; font-family: sans-serif">
+        Your web browser must have JavaScript enabled
+        in order for this application to display correctly.
+    </div>
+</noscript>
+
+<div class="master col-md-12" th:if="${masterview} != null">
+	<div th:replace="${masterview} :: content"></div>
+</div>
+
+<div class="container">
+	<div class="row detail col-md-12" th:if="${detailview} != null">
+	    <div class="row col-md-12 detail" th:include="${detailview} :: content">
+	   	</div>
+   	</div>
+   	
+    <br/>
+    
+    <div class="row col-md-12">
+	    <footer th:replace="footer :: footer">
+	    </footer>
+	</div>
+</div> <!-- /container -->
+
+</body>
+</html>

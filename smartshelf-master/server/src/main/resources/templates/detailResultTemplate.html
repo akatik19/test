@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+ 
+<body layout:fragment="content">
+
+<div class="row" th:fragment="content">
+<h2>Results</h2>
+
+<table class="table table-striped table-hover">
+    <thead>
+        <tr>
+        	<th>ID</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Amount</th>
+            <th>Information</th>
+            <th>Selection</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody th:if="${searchResult}">
+                
+        <tr th:id="${searchResult}" th:each="item, iterStat : ${searchResult}"
+        	th:classappend="${#maps.containsKey(currentColors, item.box.id)} ? success : none">
+		    <td th:id="${item.id}" th:text="${item.id}"></td>
+		    <td th:text="${item.name}"></td>
+		    <td th:text="${item.description}"></td>
+		    <td th:text="${item.box.amount}"></td>
+		    <td><button type="button"
+		    	class="btn btn-default"
+		    	th:onclick="|showItemInfoPage('${item.box.id}')|"
+		    	>Show Info</button>
+	    	</td>
+	    	<td><button type="button"
+	    		class="btn btn-default"
+	    		th:onclick="|selectBox('${item.box.id}', '${item.id}')|"
+	    		>Select</button>
+	    	</td>
+		    <!-- <td><button type="button" 
+		    	class="btn btn-default" 
+		    	th:onclick="|sendBlinkSignal('${item.box.id}', 'blue')|" 
+		    	th:disabled="${currentSignals.isBlinkSignal(item.box.id, 'blue')}"
+		    	>Blue</button></td>
+		    <td><button type="button" 
+		    	class="btn btn-default" 
+		    	th:onclick="|sendBlinkSignal('${item.box.id}', 'yellow')|"
+		    	th:disabled="${currentSignals.isBlinkSignal(item.box.id, 'yellow')}"
+		    	>Yellow</button></td>  -->
+		    <td th:text="${item.status}"></td>
+		</tr>
+    </tbody>
+</table>
+
+<div id="NAModal" class="modal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+		    <div class="modal-header">
+		        <button type="button" class="close btn btn-danger" data-dismiss="modal" aria-hidden="true">×</button>
+		        <h3 id="myModalLabel">Color currently not available</h3>
+		    </div>
+		    <div class="modal-body">
+		    	<h5>
+			        Sorry, this color is currently part of another search. 
+			        <br/>
+			        Please choose another one.
+		        </h5>
+		    </div>
+		    <div class="modal-footer">
+		        <button class="btn btn-primary" data-dismiss="modal" aria-hidden="true">OK</button>
+		    </div>
+	    </div>
+    </div>
+</div>
+
+<script type="text/javascript" th:inline="javascript">
+
+function refreshPage() {
+	console.log("refresh page");
+	window.location.reload(true);
+}
+
+function sendBlinkSignal(boxid, color) {
+	
+	var _url = "http://" + [[${serverurl}]] + ':' + [[${@environment.getProperty('server.port')}]] + "/box/signal/start/" + boxid + "/" + color; 
+	
+	 $.ajax({
+	        type: "POST",
+	        url: _url,
+	        cache: false,
+	        timeout: 600000,
+	        success: function (data) {
+
+	            console.log("Successfully send request.", data);
+	            
+	            if( !data ) { 
+	            	
+	            	$('#NAModal').modal('show');
+	            	
+	            } else { 
+	            	
+	            	refreshPage();
+	            	
+	            }
+
+	        },
+	        error: function (e) {
+
+	            console.log("ERROR : ", e);
+	        }
+	    });
+}
+</script>
+</div>
+
+</body>
+</html>

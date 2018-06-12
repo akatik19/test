@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+ 
+<body layout:fragment="content">
+ 
+<!-- Main jumbotron for a primary marketing message or call to action -->
+<div class="jumbotron" th:fragment="content">
+    <div class="container">
+    	<div class="text-center">
+	        <h1>SmartShelf</h1>
+	        
+	        <h3>Service Mode</h3>
+	        <br/>
+	        <button type="button" th:if="${!isServiceMode}"
+	        	class="btn btn-danger btn-lg" onclick="startServiceMode()"><strong>Start Service Mode</strong></button>
+	        <button type="button" th:if="${isServiceMode}"
+	        	class="btn btn-success btn-lg" onclick="stopServiceMode()"><strong>Stop Service Mode</strong></button>
+
+		</div>
+		<div class="panel panel-danger" th:if="${errormsg}">
+		  <div class="panel-heading">Panel Heading</div>
+		  <div class="panel-body" th:text="${errormsg}"></div>
+		</div>
+
+		<br/><br/>
+		<h3>Description:</h3>
+		<br/>
+		<div class="panel-group">
+			<div class="panel panel-default">
+				<div class="panel-body">
+					<p><strong>With active service mode no searches can be executed and all ongoing searches will be aborted.</strong></p> 
+				</div>
+			</div>
+	        <div class="panel panel-danger">
+	        	<div class="panel-heading">
+	        	<p>Red color signals the drawer is <strong>empty</strong></p>
+	        	</div>
+	        </div>
+	        <div class="panel panel-warning">
+	        	<div class="panel-heading">
+	        	<p>Yellow color signals the drawer more than <strong>half empty</strong></p>
+	        	</div>
+	        </div>
+	        <div class="panel panel-primary">
+	        	<div class="panel-heading">
+	        	<p>Blue color signals the drawer more than <strong>half full</strong></p>
+	        	</div>
+	        </div>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

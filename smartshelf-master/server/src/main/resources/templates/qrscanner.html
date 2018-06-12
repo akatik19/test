@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+ 
+<body layout:fragment="content">
+ 
+<!-- Main jumbotron for a primary marketing message or call to action -->
+<div class="jumbotron" th:fragment="content">
+	<div class="row col-md-6 col-md-offset-3">
+		<div class="panel panel-primary">
+		  <div class="panel-heading"><h4>QR-Code Scanner</h4></div>
+		  <div class="panel-body">
+		  	Scan the QR-Code on a box to get more information about the contained item.
+		  </div>
+		</div>	
+		
+        <div class="qrscanner col-md-6" id="scanner">
+        </div>
+        <!-- 
+        <form method="POST" 
+        	enctype="multipart/form-data" 
+        	th:action="@{http://{server}:{port}/qrscanner/info/qrimage(server=${serverurl},port=${serverport})}"
+        	id="cameraInputForm">
+        	
+        	<input type="file" capture="camera" accept="image/*" id="cameraInput" name="cameraInput"></input>
+        </form>-->
+    </div>
+
+	<script src="../static/js/imgresize/jquery.canvasResize.js" th:src="@{/js/imgresize/jquery.canvasResize.js}" type="text/javascript"></script>
+	<script src="../static/js/imgresize/canvasResize.js" th:src="@{/js/imgresize/canvasResize.js}" type="text/javascript"></script>
+    <script th:inline="javascript">
+    
+	    $(document).ready(function() {
+	    	
+	    	$('#cameraInput').change(function(e) {
+	    	  console.log("worked. new file");
+	    	  
+	    	  var file = e.target.files[0];
+/*
+	   	  	  canvasResize(file, {
+	   	  	          width: 24,
+	   	  	          height: 24,
+	   	  	          crop: false,
+	   	  	          quality: 80,
+	   	  	          //rotate: 90,
+	   	  	          callback: function(data, width, height) {
+	   	  	          	$(img).attr('src', data);
+	   	  	          }
+	   	  	    });*/
+	    	  
+	    	  $(this).parents('form').submit();
+	    	});
+	    	
+	    });
+	    
+ 		function getInformaton( boxid ) {
+ 			
+ 			console.log("Fetching data for " + boxid);
+ 			
+ 			window.location.href="http://" + [[${serverurl}]] + ':' + [[${@environment.getProperty('server.port')}]] + "/qrscanner/info/box/" + boxid;
+ 		}
+ 		
+        function onQRCodeScanned(scannedText)
+        {
+            // scannedText is the value for the input QR image.
+            console.log("Scanned QR-Code: ", scannedText);
+            
+            getInformaton(scannedText);
+        }
+
+        //this function will be called when JsQRScanner is ready to use
+        function JsQRScannerReady()
+        {
+            //create a new scanner passing to it a callback function that will be invoked when
+            //the scanner succesfully scan a QR code
+            var jbScanner = new JsQRScanner(onQRCodeScanned);
+            //reduce the size of analyzed image to increase performance on mobile devices
+            jbScanner.setSnapImageMaxSize(300);
+            var scannerParentElement = document.getElementById("scanner");
+            if(scannerParentElement)
+            {
+                //append the jbScanner to an existing DOM element
+                jbScanner.appendTo(scannerParentElement);
+            }
+        }
+    </script>
+</div>
+ 
+ 
+
+</body>
+</html>

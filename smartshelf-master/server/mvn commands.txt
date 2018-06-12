@@ -1,0 +1,9 @@
+Mvn usage: 
+
+mvn clean install [-Dmaven.test.skip=true]
+
+mvn test
+	:just test cases
+	
+	-Dinclude-mail-test=true
+		:Include sending of mails

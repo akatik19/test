@@ -1,0 +1,42 @@
+{"properties": [
+  {
+    "name": "mqtt.client.clientid",
+    "type": "java.lang.String",
+    "description": "A description for 'mqtt.client.clientid'"
+  },
+  {
+    "name": "mqtt.client.brokerurl",
+    "type": "java.lang.String",
+    "description": "A description for 'mqtt.client.brokerurl'"
+  },
+  {
+    "name": "server.url",
+    "type": "java.lang.String",
+    "description": "A description for 'server.url'"
+  },
+  {
+    "name": "mqtt.enabled",
+    "type": "java.lang.String",
+    "description": "A description for 'mqtt.enabled'"
+  },
+  {
+    "name": "client.blink.time",
+    "type": "java.lang.String",
+    "description": "A description for 'client.blink.time'"
+  },
+  {
+    "name": "weight.maxlength",
+    "type": "java.lang.String",
+    "description": "A description for 'weight.maxlength'"
+  },
+  {
+    "name": "pring.mvc.view.prefix",
+    "type": "java.lang.String",
+    "description": "A description for 'pring.mvc.view.prefix'"
+  },
+  {
+    "name": "box.empty.confirmationmail.enabled",
+    "type": "java.lang.String",
+    "description": "A description for 'box.empty.confirmationmail.enabled'"
+  }
+]}

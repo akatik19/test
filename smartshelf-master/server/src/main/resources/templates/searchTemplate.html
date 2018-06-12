@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+ 
+<body layout:fragment="content">
+ 
+<!-- Main jumbotron for a primary marketing message or call to action -->
+<div class="jumbotron" th:fragment="content">
+    <div class="container search-container">
+        <h1>SmartShelf</h1>
+        <br/>
+        
+        <input type="text"
+               id="main-search-field"
+               class="form-control input-lg col-lg-6"
+               required="required"
+               placeholder="Search keyword" 
+               th:value="${searchParam}" />
+        <br/>
+        <br/>
+        <br/>
+        <button type="button" id="main-search-submit" 
+        	class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-search"></span> Search
+       	</button>
+       	
+       	<div th:if="${errormsg}" class="panel panel-danger">
+       		<div class="panel-heading">We are sorry for the error...</div>
+       		<div class="panel-body">
+       			<p th:text="${errormsg}"></p>
+       		</div>
+       	</div>
+
+    </div>
+</div>
+ 
+ 
+
+</body>
+</html>
